@@ -21,7 +21,6 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
 
-
     //==============================================================================================
     // DECLARAÇÕES DIVERSAS
     String IdMotoboy="0";
@@ -33,7 +32,7 @@ public class MainActivity extends Activity {
     MyTimerTask myTimerTask;
 
     // Volley conectividade
-    private static String STRING_REQUEST_URL="";
+    private static String STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/testeCom?param1=1";
     private static final String TAG = "MainActivity";
     //==============================================================================================
 
@@ -105,7 +104,6 @@ public class MainActivity extends Activity {
                 @Override
                 public void run() {
                     // Faz requisição em WebService - verifica chamados em aberto
-                    STRING_REQUEST_URL="http://logvai01.azurewebsites.net/Webservice.asmx/teste?param1=OK";
                     volleyStringRequst(STRING_REQUEST_URL);
                 }});
         }
