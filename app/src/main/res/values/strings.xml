@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LogVai</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="controles_switchON">Ligado</string>
+    <string name="controles_switchOFF">Desligado</string>
+    <string name="controles_switchText">Atender chamados:</string>
+
+</resources>
