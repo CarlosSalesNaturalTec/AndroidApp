@@ -6,4 +6,14 @@
     <string name="controles_switchOFF">Desligado</string>
     <string name="controles_switchText">Atender chamados:</string>
 
+    <string-array name="status_array">
+        <item>SELECIONE STATUS DA ENTREGA</item>
+        <item>01 - ENTREGA EFETUADA</item>
+        <item>02 - MUDOU-SE</item>
+        <item>03 - AUSENTE</item>
+        <item>04 - NÃO QUIZ RECEBER</item>
+        <item>05 - ÁREA DE RISCO</item>
+        <item>06 - ENDEREÇO INSUFICIENTE</item>
+    </string-array>
+
 </resources>

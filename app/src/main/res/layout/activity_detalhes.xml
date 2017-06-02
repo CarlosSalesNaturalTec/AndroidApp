@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:text="Bairro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtBairro"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:layout_marginStart="8dp"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:text="Nome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtNome"
+        android:textStyle="bold"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:text="Endereço"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtEnderec"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:text="Ponto de Referencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtPref"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:text="Cidade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtCidade"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:text="Telefone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtTelefone"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:text="Observações"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtObs"
+        android:layout_marginStart="8dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtStartTravel"
+        android:layout_marginStart="8dp"
+        android:textStyle="bold"
+        />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:id="@+id/spinner"
+        />
+
+    <Button
+        android:text="Iniciar Viagem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btStart"
+        android:layout_marginTop="20dp"
+        android:onClick="btStartTravel" />
+
+    <Button
+        android:text="Concluir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btConcluida"
+        android:layout_marginTop="20dp"
+        android:enabled="false"
+        android:onClick="btEndTravel" />
+
+    <Button
+        android:text="Mapa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btMap"
+        android:layout_marginTop="20dp"
+        android:onClick="btMapaDetalhe" />
+
+</LinearLayout>

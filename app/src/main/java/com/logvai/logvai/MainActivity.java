@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ public class MainActivity extends Activity {
     MyTimerTask myTimerTask;
 
     // Volley conectividade
-    private static String STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/testeCom?param1=1";
+    private static String STRING_REQUEST_URL;
     private static final String TAG = "MainActivity";
     //==============================================================================================
 
@@ -41,6 +42,7 @@ public class MainActivity extends Activity {
     // CICLO DA ACTIVITY
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         txtID = (TextView) findViewById(R.id.txtID);
@@ -49,10 +51,10 @@ public class MainActivity extends Activity {
         // Identifica ID do Motoboy
         IdentificaID();
 
-        // ativa timer
+        // Ativa TIMER
         timer = new Timer();
         myTimerTask = new MyTimerTask();
-        timer.schedule(myTimerTask, 0, 10000); //atualiza a cada 5 segundos
+        timer.schedule(myTimerTask, 0, 10000); //atualiza a cada 10 segundos
 
         // verifica estado do Swicht
         swctOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -77,6 +79,9 @@ public class MainActivity extends Activity {
 
 
 
+
+
+
     //==============================================================================================
     // Identifica Motoboy
     public void IdentificaID(){
@@ -94,6 +99,9 @@ public class MainActivity extends Activity {
 
 
 
+
+
+
     //==============================================================================================
     //TIMER - TAREFAS
     class MyTimerTask extends TimerTask {
@@ -103,12 +111,17 @@ public class MainActivity extends Activity {
 
                 @Override
                 public void run() {
-                    // Faz requisição em WebService - verifica chamados em aberto
+
+                    // A cada X segundos faz requisição em WebService - verifica chamados em aberto
+                    STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/VerificaEntregas?IdMotoboy=" + Global.globalID ;
                     volleyStringRequst(STRING_REQUEST_URL);
+
                 }});
         }
     }
     //==============================================================================================
+
+
 
 
 
@@ -122,13 +135,23 @@ public class MainActivity extends Activity {
         StringRequest strReq = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(MainActivity.this, "Recebido: " + response, Toast.LENGTH_SHORT).show();
+
+                int retorno = response.indexOf("9999");
+
+                if (retorno == -1){
+                    //encontrou entregas
+                    Toast.makeText(MainActivity.this, "Encontrou Entregas", Toast.LENGTH_SHORT).show();
+                } else {
+                    // não existem entregas
+                    Toast.makeText(MainActivity.this, "SEM ENTREGAS", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                //Toast.makeText(MainActivity.this, "Falha de Comunicalção", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Falha de Comunicação", Toast.LENGTH_SHORT).show();
             }
         });
         // Adding String request to request queue
@@ -178,7 +201,6 @@ public class MainActivity extends Activity {
         return true;
     }
     // ==============================================================================================================
-
 
 
 }
