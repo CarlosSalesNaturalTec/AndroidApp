@@ -4,29 +4,53 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     //==============================================================================================
     // DECLARAÇÕES DIVERSAS
-    String IdMotoboy="0";
+    String IdMotoboy="0",IdEntrega="0";
     TextView txtID;
     Switch swctOnOff;
+    public String OnOff = "On";
+
+    DateFormat dateFormat,horaFormat;
+    Location mLastLocation;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    String lat, lon;
 
     // timer
     Timer timer;
@@ -38,6 +62,9 @@ public class MainActivity extends Activity {
     //==============================================================================================
 
 
+
+
+
     // =============================================================================================
     // CICLO DA ACTIVITY
     @Override
@@ -47,6 +74,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         txtID = (TextView) findViewById(R.id.txtID);
         swctOnOff = (Switch) findViewById(R.id.switch1);
+
+        //Google API
+        buildGoogleApiClient();
 
         // Identifica ID do Motoboy
         IdentificaID();
@@ -62,11 +92,14 @@ public class MainActivity extends Activity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     // ativa timer
+                    OnOff = "On";
                     timer = new Timer();
                     myTimerTask = new MyTimerTask();
-                    timer.schedule(myTimerTask, 0, 10000); //atualiza a cada 10 segundos
+                    timer.schedule(myTimerTask, 0, 30000); //atualiza a cada 10 segundos
+
                 }else{
                     //desativa timer
+                    OnOff = "Off";
                     if (timer!=null){
                         timer.cancel();
                         timer = null;
@@ -74,6 +107,36 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mGoogleApiClient.disconnect();
+    }
+    // =============================================================================================
+
+
+
+
+
+    // =============================================================================================
+    // Google Play API Services
+    synchronized void buildGoogleApiClient() {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
     // =============================================================================================
 
@@ -98,6 +161,88 @@ public class MainActivity extends Activity {
     //==============================================================================================
 
 
+
+
+
+    //======================================================================================================================
+    //GEOLOCALIZAÇÃO
+    //======================================================================================================================
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+        mLocationRequest.setInterval(20000); // Atualizaçao a cada : 20 segundos
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MainActivity.this, "Opaaaaa", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        if (mLastLocation != null) {
+            lat = String.valueOf(mLastLocation.getLatitude());
+            lon = String.valueOf(mLastLocation.getLongitude());
+        }
+
+
+        if (OnOff == "Off") {
+            return;
+        } else {
+            Toast.makeText(MainActivity.this, "Lat:" + lat + " Lng:" + lon, Toast.LENGTH_SHORT).show();
+        }
+
+        // envia dados de localização utilizando Volley Library
+        // ==============================================================================================================
+        //dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        //horaFormat = new SimpleDateFormat("HH:mm:ss");
+        //Date date = new Date();
+
+        //STRING_REQUEST_URL="http://logwebservice.azurewebsites.net/wservice.asmx/Historico?IDMotoboy="+ IdMotoboy + "&identrega="
+        //        + IdEntrega + "&latitude=" + lat + "&longitude=" + lon + "&dataleitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date);
+        //volleyStringRequst(STRING_REQUEST_URL);
+        // ==============================================================================================================
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        buildGoogleApiClient();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        lat = String.valueOf(location.getLatitude());
+        lon = String.valueOf(location.getLongitude());
+
+        if (OnOff == "Off") {
+            return;
+        } else {
+            Toast.makeText(MainActivity.this, "Lat:" + lat + " Lng:" + lon, Toast.LENGTH_SHORT).show();
+        }
+
+        // envia dados de localização utilizando Volley library
+        // ==============================================================================================================
+        //dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        //horaFormat = new SimpleDateFormat("HH:mm:ss");
+        //Date date = new Date();
+
+        //STRING_REQUEST_URL="http://logwebservice.azurewebsites.net/wservice.asmx/Historico?IDMotoboy="+ IdMotoboy + "&identrega="
+        //        + IdEntrega + "&latitude=" + lat + "&longitude=" + lon + "&dataleitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date);
+        //volleyStringRequst(STRING_REQUEST_URL);
+        // ==============================================================================================================
+
+    }
 
 
 
