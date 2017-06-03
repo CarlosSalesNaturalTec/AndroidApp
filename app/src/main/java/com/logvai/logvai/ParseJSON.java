@@ -14,8 +14,8 @@ public class ParseJSON {
 
     // defina aqui os campos a serem lidos
     public static final String KEY_ID = "ID_Entrega";
-    public static final String KEY_TITULO = "Bairro";
-    public static final String KEY_SUBTITULO = "Endereco";
+    public static final String KEY_TITULO = "Origem";
+    public static final String KEY_SUBTITULO = "Destino";
 
     private JSONArray users = null;
     private String json;

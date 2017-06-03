@@ -45,12 +45,14 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     TextView txtID;
     Switch swctOnOff;
     public String OnOff = "On";
+    public boolean Exibir = false;
 
     DateFormat dateFormat,horaFormat;
     Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     String lat, lon;
+    // ----
 
     // timer
     Timer timer;
@@ -84,7 +86,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         // Ativa TIMER
         timer = new Timer();
         myTimerTask = new MyTimerTask();
-        timer.schedule(myTimerTask, 0, 10000); //atualiza a cada 10 segundos
+        timer.schedule(myTimerTask, 0, 20000); //atualiza a cada 10 segundos
 
         // verifica estado do Swicht
         swctOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -95,7 +97,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     OnOff = "On";
                     timer = new Timer();
                     myTimerTask = new MyTimerTask();
-                    timer.schedule(myTimerTask, 0, 30000); //atualiza a cada 10 segundos
+                    timer.schedule(myTimerTask, 0, 20000); //atualiza a cada 20 segundos
 
                 }else{
                     //desativa timer
@@ -172,11 +174,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
-        mLocationRequest.setInterval(20000); // Atualizaçao a cada : 20 segundos
+        mLocationRequest.setInterval(30000); // Atualizaçao a cada : 30 segundos
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(MainActivity.this, "Opaaaaa", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "O Aplicativo necessita de permissão de localização. Ative em Configurações", Toast.LENGTH_SHORT).show();
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -189,22 +191,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             lon = String.valueOf(mLastLocation.getLongitude());
         }
 
-
         if (OnOff == "Off") {
             return;
-        } else {
-            Toast.makeText(MainActivity.this, "Lat:" + lat + " Lng:" + lon, Toast.LENGTH_SHORT).show();
         }
 
-        // envia dados de localização utilizando Volley Library
+        // envia dados de localização utilizando Volley
         // ==============================================================================================================
-        //dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        //horaFormat = new SimpleDateFormat("HH:mm:ss");
-        //Date date = new Date();
-
-        //STRING_REQUEST_URL="http://logwebservice.azurewebsites.net/wservice.asmx/Historico?IDMotoboy="+ IdMotoboy + "&identrega="
-        //        + IdEntrega + "&latitude=" + lat + "&longitude=" + lon + "&dataleitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date);
-        //volleyStringRequst(STRING_REQUEST_URL);
+        STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/Localizacao?param1=" + IdMotoboy +
+                "&param2=" + lat + "&param3=" + lon;
+        volleyStringRequst(STRING_REQUEST_URL);
         // ==============================================================================================================
 
     }
@@ -222,28 +217,22 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     @Override
     public void onLocationChanged(Location location) {
 
+        if (OnOff == "Off") {
+            return;
+        }
+
         lat = String.valueOf(location.getLatitude());
         lon = String.valueOf(location.getLongitude());
 
-        if (OnOff == "Off") {
-            return;
-        } else {
-            Toast.makeText(MainActivity.this, "Lat:" + lat + " Lng:" + lon, Toast.LENGTH_SHORT).show();
-        }
-
         // envia dados de localização utilizando Volley library
         // ==============================================================================================================
-        //dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        //horaFormat = new SimpleDateFormat("HH:mm:ss");
-        //Date date = new Date();
-
-        //STRING_REQUEST_URL="http://logwebservice.azurewebsites.net/wservice.asmx/Historico?IDMotoboy="+ IdMotoboy + "&identrega="
-        //        + IdEntrega + "&latitude=" + lat + "&longitude=" + lon + "&dataleitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date);
-        //volleyStringRequst(STRING_REQUEST_URL);
+        STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/Localizacao?param1=" + IdMotoboy +
+                "&param2=" + lat + "&param3=" + lon;
+        volleyStringRequst(STRING_REQUEST_URL);
         // ==============================================================================================================
 
     }
-
+    //======================================================================================================================
 
 
 
@@ -257,7 +246,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                 @Override
                 public void run() {
 
-                    // A cada X segundos faz requisição em WebService - verifica chamados em aberto
+                    // Verifica chamados em aberto - A cada X segundos faz requisição em WebService
                     STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/VerificaEntregas?IdMotoboy=" + Global.globalID ;
                     volleyStringRequst(STRING_REQUEST_URL);
 
@@ -284,11 +273,15 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                 int retorno = response.indexOf("9999");
 
                 if (retorno == -1){
-                    //encontrou entregas
-                    Toast.makeText(MainActivity.this, "Encontrou Entregas", Toast.LENGTH_SHORT).show();
-                } else {
-                    // não existem entregas
-                    Toast.makeText(MainActivity.this, "SEM ENTREGAS", Toast.LENGTH_SHORT).show();
+
+                    // verifica se é um retorno do envio de localização
+                    retorno = response.indexOf("OK");
+                    if (retorno != -1){
+                        return;
+                    }
+
+                    DetalhesEntrega();
+
                 }
 
             }
@@ -313,6 +306,14 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     public void volleyClearCache(){
         AppSingleton.getInstance(getApplicationContext()).getRequestQueue().getCache().clear();
+    }
+
+    public void DetalhesEntrega(){
+
+        //if (Exibir == true ) { return;}
+        //Exibir = true;
+        Intent it = new Intent(this, ListaActivity.class);
+        startActivity(it);
     }
     // ==============================================================================================================
 

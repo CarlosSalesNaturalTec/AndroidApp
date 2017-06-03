@@ -7,9 +7,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+
+import java.util.List;
 
 public class ListaActivity extends ListActivity {
 
@@ -19,7 +23,7 @@ public class ListaActivity extends ListActivity {
     ProgressDialog progressDialog;
 
     //Volley conectividade
-    public static final String JSON_URL = "http://logwebservice.azurewebsites.net/wservice.asmx/ListaEntregas?IdMotoboy=" + Global.globalID ;
+    public static final String JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas?IdMotoboy=" + Global.globalID ;
     private static final String TAG = "ListaActivity";
     // ==============================================================================================================
 
@@ -45,47 +49,34 @@ public class ListaActivity extends ListActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
                 //ID da Entrega selecionada
-                String  idEntrega    = (String) lv.getItemAtPosition(position);
+                //String  idEntrega    = (String) lv.getItemAtPosition(position);
 
                 //transferencia de dados entre Activitys
-                Bundle b = new Bundle();
-                b.putString("IDEntrega",idEntrega);
+                //Bundle b = new Bundle();
+                //b.putString("IDEntrega",idEntrega);
 
                 //abre nova Activity
-                Intent proximatela = new Intent(getApplicationContext(),DetalhesActivity.class);
-                proximatela.putExtras(b);
-                startActivity(proximatela);
+                //Intent proximatela = new Intent(getApplicationContext(),Detalhes2Activity.class);
+                //proximatela.putExtras(b);
+                //startActivity(proximatela);
 
             }
         });
 
     }
-    // onResume
     @Override
     public void onResume(){
         super.onResume();
-        //atualiza lista de entregas em aberto e preenche ListView
         volleyStringRequst(JSON_URL);
     }
 
-    //======================================================================================================================
-    //JSON Parsing
-    private void showJSON(String json){
-        //monta Array String com lista de Entregas
-        ParseJSON pj = new ParseJSON(json);
-        pj.parseJSON();
-
-        ListaAdapter cl = new ListaAdapter(this, ParseJSON.IDs, ParseJSON.Titulos, ParseJSON.SubTitulos);
-        lv.setAdapter(cl);
-    }
-    //=====================================================================================================================
 
     //======================================================================================================================
     //VOLLEY CONECTIVIDADE - TROCA DE DADOS COM WEB-SERVICE - requisita Lista de Entregas (Bairro e Endereço)
     //======================================================================================================================
     public void volleyStringRequst(String url){
 
-        String  REQUEST_TAG = "br.com.loglogistica.volleyStringRequest";
+        String  REQUEST_TAG = "LISTAENTREGAS";
         progressDialog.setMessage("Aguarde...");
         progressDialog.show();
 
@@ -93,7 +84,7 @@ public class ListaActivity extends ListActivity {
             @Override
             public void onResponse(String response) {
                 //Formata retorno obtido do web-service (padrão parsing JSON)
-                String str1 =  "{\"entregas\":" + response.toString().substring(63);
+                String str1 =  "{\"entregas\":" + response.toString().substring(62);
                 int tamanho=str1.length() -9 ;
                 String str2 = str1.substring(0,tamanho) + "}";
 
@@ -113,5 +104,20 @@ public class ListaActivity extends ListActivity {
         // Adding String request to request queue
         AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, REQUEST_TAG);
     }
+
+    //======================================================================================================================
+    //JSON Parsing
+    private void showJSON(String json){
+
+        Toast.makeText(ListaActivity.this, json, Toast.LENGTH_LONG).show();
+
+        //monta Array String com lista de Entregas
+        //ParseJSON pj = new ParseJSON(json);
+        //pj.parseJSON();
+
+        //ListaAdapter cl = new ListaAdapter(this, ParseJSON.IDs, ParseJSON.Titulos, ParseJSON.SubTitulos);
+        //lv.setAdapter(cl);
+    }
+    //=====================================================================================================================
 
 }

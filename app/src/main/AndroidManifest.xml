@@ -24,11 +24,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -43,6 +41,7 @@
         <activity android:name=".ConfigActivity" />
         <activity android:name=".ListaActivity" />
         <activity android:name=".DetalhesActivity" />
+        <activity android:name=".Detalhes2Activity"></activity>
     </application>
 
 </manifest>

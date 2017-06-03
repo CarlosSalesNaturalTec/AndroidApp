@@ -1,9 +1,5 @@
 package com.logvai.logvai;
 
-/**
- * Created by Carlos on 29/05/2017.
- */
-
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
