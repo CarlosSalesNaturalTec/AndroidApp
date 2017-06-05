@@ -13,8 +13,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-import java.util.List;
-
 public class ListaActivity extends ListActivity {
 
     // ==============================================================================================================
@@ -49,26 +47,29 @@ public class ListaActivity extends ListActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
                 //ID da Entrega selecionada
-                //String  idEntrega    = (String) lv.getItemAtPosition(position);
+                String  idEntrega    = (String) lv.getItemAtPosition(position);
 
                 //transferencia de dados entre Activitys
-                //Bundle b = new Bundle();
-                //b.putString("IDEntrega",idEntrega);
+                Bundle b = new Bundle();
+                b.putString("IDEntrega",idEntrega);
 
                 //abre nova Activity
-                //Intent proximatela = new Intent(getApplicationContext(),Detalhes2Activity.class);
-                //proximatela.putExtras(b);
-                //startActivity(proximatela);
+                Intent proximatela = new Intent(getApplicationContext(),DetalhesActivity.class);
+                proximatela.putExtras(b);
+                startActivity(proximatela);
 
             }
         });
 
     }
+    // onResume
     @Override
     public void onResume(){
         super.onResume();
+        //atualiza lista de entregas em aberto e preenche ListView
         volleyStringRequst(JSON_URL);
     }
+
 
 
     //======================================================================================================================
@@ -76,16 +77,17 @@ public class ListaActivity extends ListActivity {
     //======================================================================================================================
     public void volleyStringRequst(String url){
 
-        String  REQUEST_TAG = "LISTAENTREGAS";
+        String  REQUEST_TAG = "br.com.loglogistica.volleyStringRequest";
         progressDialog.setMessage("Aguarde...");
         progressDialog.show();
 
         StringRequest strReq = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //Formata retorno obtido do web-service (padrão parsing JSON)
-                String str1 =  "{\"entregas\":" + response.toString().substring(62);
-                int tamanho=str1.length() -9 ;
+
+                //Formata retorno obtido do web-service. Layout: [{" json string "}]
+                String str1 =  "{\"entregas\":" + response.toString().substring(91);
+                int tamanho = str1.length() -9 ;
                 String str2 = str1.substring(0,tamanho) + "}";
 
                 //envia retorno formatado para processo de Parsing
@@ -108,15 +110,12 @@ public class ListaActivity extends ListActivity {
     //======================================================================================================================
     //JSON Parsing
     private void showJSON(String json){
-
-        Toast.makeText(ListaActivity.this, json, Toast.LENGTH_LONG).show();
-
         //monta Array String com lista de Entregas
-        //ParseJSON pj = new ParseJSON(json);
-        //pj.parseJSON();
+        ParseJSON pj = new ParseJSON(json);
+        pj.parseJSON();
 
-        //ListaAdapter cl = new ListaAdapter(this, ParseJSON.IDs, ParseJSON.Titulos, ParseJSON.SubTitulos);
-        //lv.setAdapter(cl);
+        ListaAdapter cl = new ListaAdapter(this, ParseJSON.IDs, ParseJSON.Titulos, ParseJSON.SubTitulos);
+        lv.setAdapter(cl);
     }
     //=====================================================================================================================
 

@@ -6,12 +6,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,18 +45,17 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     //==============================================================================================
     // DECLARAÇÕES DIVERSAS
-    String IdMotoboy="0",IdEntrega="0";
-    TextView txtID;
+    String IdMotoboy="0";
+    TextView txtID, txtMSGTitulo, txtMSGTitulo2;
     Switch swctOnOff;
+    Button btDetalhes;
     public String OnOff = "On";
-    public boolean Exibir = false;
 
     DateFormat dateFormat,horaFormat;
     Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     String lat, lon;
-    // ----
 
     // timer
     Timer timer;
@@ -76,6 +79,10 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         setContentView(R.layout.activity_main);
         txtID = (TextView) findViewById(R.id.txtID);
         swctOnOff = (Switch) findViewById(R.id.switch1);
+
+        txtMSGTitulo = (TextView) findViewById(R.id.txtMSGTitulo);
+        txtMSGTitulo2 = (TextView) findViewById(R.id.txtMSGTitulo2);
+        btDetalhes = (Button) findViewById(R.id.btDetalhes);
 
         //Google API
         buildGoogleApiClient();
@@ -106,6 +113,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                         timer.cancel();
                         timer = null;
                     }
+                    AvisoApagar();
                 }
             }
         });
@@ -280,8 +288,10 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                         return;
                     }
 
-                    DetalhesEntrega();
+                    AvisoEntrega();
 
+                } else {
+                    AvisoApagar();
                 }
 
             }
@@ -308,10 +318,23 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         AppSingleton.getInstance(getApplicationContext()).getRequestQueue().getCache().clear();
     }
 
-    public void DetalhesEntrega(){
+    public void AvisoEntrega(){
+        txtMSGTitulo.setVisibility(View.VISIBLE);
+        txtMSGTitulo2.setVisibility(View.VISIBLE);
+        btDetalhes.setVisibility(View.VISIBLE);
 
-        //if (Exibir == true ) { return;}
-        //Exibir = true;
+        ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 400);
+        toneGen1.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK,100);
+
+    }
+
+    public void AvisoApagar(){
+        txtMSGTitulo.setVisibility(View.INVISIBLE);
+        txtMSGTitulo2.setVisibility(View.INVISIBLE);
+        btDetalhes.setVisibility(View.INVISIBLE);
+    }
+
+    public void DetalhesEntregas (View view){
         Intent it = new Intent(this, ListaActivity.class);
         startActivity(it);
     }

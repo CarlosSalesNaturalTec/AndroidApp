@@ -21,22 +21,54 @@
         android:id="@+id/switch1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
         android:checked="true"
         android:showText="true"
         android:textAlignment="center"
         android:textOff="@string/controles_switchOFF"
         android:textOn="@string/controles_switchON"
-        android:textSize="18sp"
-        />
+        android:textSize="18sp" />
 
+    <TextView
+        android:id="@+id/txtMSGTitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/msgEntregaNovaTit"
+        android:textAlignment="center"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/txtMSGTitulo2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/msgEntregaNova"
+        android:textAlignment="center"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/btDetalhes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Detalhes"
+        android:visibility="invisible"
+        android:onClick="DetalhesEntregas" />
 
     <TextView
         android:id="@+id/txtID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
         android:text="ID: xxx"
         android:textSize="8dp" />
+
 
 
 </LinearLayout>

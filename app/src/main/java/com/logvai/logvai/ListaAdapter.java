@@ -36,9 +36,9 @@ public class ListaAdapter extends ArrayAdapter<String>{
         TextView txtSubtitulo = (TextView)rowView.findViewById(R.id.txtSubTitulo);
 
         //---passe os textos baseados na posição atual do listView
-        txtID.setText(ids[position]);
-        txtTitulo.setText(titulos[position]);
-        txtSubtitulo.setText(subtitulos[position]);
+        txtID.setText("ID: " + ids[position]);
+        txtTitulo.setText("Origem: " + titulos[position]);
+        txtSubtitulo.setText("Destino: " + subtitulos[position]);
         return rowView;
     }
 }

@@ -2,9 +2,12 @@
     <string name="app_name">LogVai</string>
     <string name="title_activity_maps">Map</string>
 
-    <string name="controles_switchON">Ligado</string>
-    <string name="controles_switchOFF">Desligado</string>
-    <string name="controles_switchText">Atender chamados:</string>
+    <string name="controles_switchON">Disponível</string>
+    <string name="controles_switchOFF">Indisponível</string>
+    <string name="controles_switchText">Status:</string>
+
+    <string name="msgEntregaNovaTit">Atenção!</string>
+    <string name="msgEntregaNova">Novas Entregas a Realizar.</string>
 
     <string-array name="status_array">
         <item>SELECIONE STATUS DA ENTREGA</item>
