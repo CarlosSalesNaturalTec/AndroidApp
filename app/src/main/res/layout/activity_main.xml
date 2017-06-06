@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     >
 
+
+
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
@@ -16,21 +18,27 @@
         android:src="@drawable/logomediun"
         tools:ignore="ContentDescription" />
 
+    <TextView
+        android:id="@+id/txtID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textAlignment="center"
+        android:textSize="14dp" />
 
     <Switch
         android:id="@+id/switch1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="60dp"
         android:checked="true"
         android:showText="true"
-        android:textAlignment="center"
         android:textOff="@string/controles_switchOFF"
         android:textOn="@string/controles_switchON"
         android:textSize="18sp" />
 
-    <TextView
+      <TextView
         android:id="@+id/txtMSGTitulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,19 +64,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:elevation="2dp"
+        android:onClick="DetalhesEntregas"
         android:text="Detalhes"
         android:visibility="invisible"
-        android:onClick="DetalhesEntregas" />
-
-    <TextView
-        android:id="@+id/txtID"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-        android:text="ID: xxx"
-        android:textSize="8dp" />
-
+        android:background="@android:color/holo_orange_light"
+        />
 
 
 </LinearLayout>

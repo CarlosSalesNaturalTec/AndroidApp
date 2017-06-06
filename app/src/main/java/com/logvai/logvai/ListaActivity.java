@@ -21,7 +21,7 @@ public class ListaActivity extends ListActivity {
     ProgressDialog progressDialog;
 
     //Volley conectividade
-    public static final String JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas?IdMotoboy=" + Global.globalID ;
+    public static final String JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas?param1=" + Global.globalID ;
     private static final String TAG = "ListaActivity";
     // ==============================================================================================================
 
