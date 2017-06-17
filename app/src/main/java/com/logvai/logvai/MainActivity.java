@@ -48,6 +48,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     Button btDetalhes;
     public String OnOff = "Off";
 
+    // Localização
     Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -57,6 +58,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     Timer timer;
     MyTimerTask myTimerTask;
 
+    // Vibrar
     Vibrator vibrator;
 
     // Volley conectividade
@@ -131,6 +133,19 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         super.onDestroy();
         mGoogleApiClient.disconnect();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        OnOff = "On";
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        OnOff = "On";
+    }
+
     // =============================================================================================
 
 
@@ -366,6 +381,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     public void AvisoEntrega(){
 
+        if (OnOff == "Off") { return;}
+
         txtMSGTitulo.setVisibility(View.VISIBLE);
         txtMSGTitulo2.setVisibility(View.VISIBLE);
         btDetalhes.setVisibility(View.VISIBLE);
@@ -377,7 +394,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 800);
         toneGen1.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK,2000);
 
-
     }
 
     public void AvisoApagar(){
@@ -387,6 +403,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     public void DetalhesEntregas (View view){
+        OnOff = "Off";
         Intent it = new Intent(this, ListaActivity.class);
         startActivity(it);
     }

@@ -37,8 +37,15 @@
             android:id="@+id/txtSubTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/txtSubTitulo1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:textSize="14sp" />
+
     </LinearLayout>
 
 </LinearLayout>

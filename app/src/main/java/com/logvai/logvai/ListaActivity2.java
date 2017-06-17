@@ -7,13 +7,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-public class ListaActivity extends ListActivity {
+public class ListaActivity2 extends ListActivity {
 
     // ==============================================================================================================
     // DECLARAÇÕES DIVERSAS
@@ -21,7 +20,7 @@ public class ListaActivity extends ListActivity {
     ProgressDialog progressDialog;
 
     //Volley conectividade
-    public static final String JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas?param1=" + Global.globalID ;
+    public String JSON_URL="";
     // ==============================================================================================================
 
 
@@ -30,13 +29,14 @@ public class ListaActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lista);
+        setContentView(R.layout.activity_lista2);
 
         //monta ListView
         lv = (ListView) findViewById(android.R.id.list);
         progressDialog = new ProgressDialog(this);
 
         //requisita lista de entregas e preenche ListView
+        JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas?param1=" + Global.globalID ;
         volleyStringRequst(JSON_URL);
 
         //aguarda/verifica seleção do usuário
@@ -45,7 +45,7 @@ public class ListaActivity extends ListActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
-                //ID da Entrega_MASTER selecionada
+                //ID da Entrega selecionada
                 String  idEntrega    = (String) lv.getItemAtPosition(position);
 
                 //transferencia de dados entre Activitys
@@ -53,7 +53,7 @@ public class ListaActivity extends ListActivity {
                 b.putString("IDEntrega",idEntrega);
 
                 //abre nova Activity
-                Intent proximatela = new Intent(getApplicationContext(),ListaActivity2.class);
+                Intent proximatela = new Intent(getApplicationContext(),DetalhesActivity.class);
                 proximatela.putExtras(b);
                 startActivity(proximatela);
 
@@ -76,7 +76,7 @@ public class ListaActivity extends ListActivity {
     //======================================================================================================================
     public void volleyStringRequst(String url){
 
-        String  REQUEST_TAG = "com.logvai.volleyStringRequest";
+        String  REQUEST_TAG = "com.logvai.logvai.volleyStringRequest";
         progressDialog.setMessage("Aguarde...");
         progressDialog.show();
 
