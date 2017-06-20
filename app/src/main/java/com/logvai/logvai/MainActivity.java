@@ -34,6 +34,7 @@ import java.text.DateFormat;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -151,7 +152,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 
 
-
     // =============================================================================================
     // Google Play API Services
     synchronized void buildGoogleApiClient() {
@@ -168,8 +168,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 
 
-
-
     //==============================================================================================
     // Identifica Motoboy
     public void IdentificaID(){
@@ -182,14 +180,12 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             // Identifica Nome do Motoboy
             STRING_REQUEST_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/IdentificaID?param1=" + IdMotoboy ;
             volleyStringRequestID(STRING_REQUEST_URL);
-
         }else{
             swctOnOff.setEnabled(false);
             OnOff = "Off";
         }
     }
     //==============================================================================================
-
 
 
 
@@ -264,6 +260,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
 
 
+
     //==============================================================================================
     //TIMER - TAREFAS
     class MyTimerTask extends TimerTask {
@@ -284,7 +281,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         }
     }
     //==============================================================================================
-
 
 
 
@@ -344,15 +340,26 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     swctOnOff.setEnabled(false);
                     OnOff = "Off";
                 } else {
+                    // verifica horário comercial
+                    Calendar calander = Calendar.getInstance();
+                    int cHour = calander.get(Calendar.HOUR_OF_DAY);
+                    if ( cHour > 19){
+                        txtMSGTitulo.setVisibility(View.VISIBLE);
+                        txtMSGTitulo.setText("Fora de Horário Comercial!" );
+                        swctOnOff.setEnabled(false);
+                        OnOff = "Off";
+                    } else {
+                        int pos = response.indexOf("Nome");
+                        int pos1 = response.indexOf("xFIMx");
+                        int v1 = pos + 7;
+                        int v2 = pos1 - v1;
+                        int v3 = v1 + v2;
+                        String nomeUser = response.substring(v1, v3);
 
-                    int pos = response.indexOf("Nome");
-                    int pos1 = response.indexOf("xFIMx");
-                    int v1 = pos + 7;int v2 = pos1 - v1;int v3 = v1 + v2;
-                    String nomeUser = response.substring(v1,v3);
-
-                    txtID.setText("Usuário: " + nomeUser );
-                    swctOnOff.setEnabled(true);
-                    OnOff = "On";
+                        txtID.setText("Usuário: " + nomeUser);
+                        swctOnOff.setEnabled(true);
+                        OnOff = "On";
+                    }
                 }
 
             }

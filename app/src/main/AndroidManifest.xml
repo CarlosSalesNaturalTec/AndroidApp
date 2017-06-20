@@ -42,7 +42,6 @@
         <activity android:name=".ConfigActivity" />
         <activity android:name=".ListaActivity" />
         <activity android:name=".DetalhesActivity" />
-        <activity android:name=".Detalhes2Activity" />
         <activity android:name=".ListaActivity2"></activity>
     </application>
 

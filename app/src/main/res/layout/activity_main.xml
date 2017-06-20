@@ -38,7 +38,8 @@
         android:textOn="@string/controles_switchON"
         android:textSize="18sp" />
 
-      <TextView
+
+    <TextView
         android:id="@+id/txtMSGTitulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

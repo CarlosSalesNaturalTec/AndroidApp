@@ -18,6 +18,7 @@ public class ListaActivity2 extends ListActivity {
     // DECLARAÇÕES DIVERSAS
     public  ListView lv;
     ProgressDialog progressDialog;
+    public String IdEntrega="";
 
     //Volley conectividade
     public String JSON_URL="";
@@ -35,8 +36,12 @@ public class ListaActivity2 extends ListActivity {
         lv = (ListView) findViewById(android.R.id.list);
         progressDialog = new ProgressDialog(this);
 
+        //recupera dados passados da Activity anterior - ID da Entrega Master
+        Bundle b = getIntent().getExtras();
+        IdEntrega = b.getString("IDEntrega");
+
         //requisita lista de entregas e preenche ListView
-        JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas?param1=" + Global.globalID ;
+        JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas2?param1=" + IdEntrega;
         volleyStringRequst(JSON_URL);
 
         //aguarda/verifica seleção do usuário
@@ -76,7 +81,7 @@ public class ListaActivity2 extends ListActivity {
     //======================================================================================================================
     public void volleyStringRequst(String url){
 
-        String  REQUEST_TAG = "com.logvai.logvai.volleyStringRequest";
+        String  REQUEST_TAG = "com.logvai.logvai.Lista2";
         progressDialog.setMessage("Aguarde...");
         progressDialog.show();
 
@@ -110,10 +115,10 @@ public class ListaActivity2 extends ListActivity {
     //JSON Parsing
     private void showJSON(String json){
         //monta Array String com lista de Entregas
-        ParseJSON pj = new ParseJSON(json);
-        pj.parseJSON();
+        ParseJSON2 pj = new ParseJSON2(json);
+        pj.parseJSON2();
 
-        ListaAdapter cl = new ListaAdapter(this, ParseJSON.IDs, ParseJSON.Titulos, ParseJSON.SubTitulos, ParseJSON.SubTitulos1);
+        ListaAdapter2 cl = new ListaAdapter2(this, ParseJSON.IDs, ParseJSON.Titulos, ParseJSON.SubTitulos, ParseJSON.SubTitulos1);
         lv.setAdapter(cl);
     }
     //=====================================================================================================================
