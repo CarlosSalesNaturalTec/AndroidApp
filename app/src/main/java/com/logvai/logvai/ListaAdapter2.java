@@ -18,7 +18,7 @@ public class ListaAdapter2 extends ArrayAdapter<String> {
     //O construtor pode receber quantos parametros forem necessários mas um array de String deve ser passado como parametro do construtor da super-classe
     public ListaAdapter2(Activity context, String[] ids, String[] titulos, String[] subtitulos, String[] subtitulos1)
     {
-        super(context, R.layout.lista_itens, ids);
+        super(context, R.layout.lista_itens2, ids);
         this.context = context;
         this.ids = ids;
         this.titulos = titulos;
@@ -30,7 +30,7 @@ public class ListaAdapter2 extends ArrayAdapter<String> {
 
         LayoutInflater inflater = context.getLayoutInflater();
         //Aqui retornamos o layout para podermos administrar as Views da tela
-        View rowView= inflater.inflate(R.layout.lista_itens, null, true);
+        View rowView= inflater.inflate(R.layout.lista_itens2, null, true);
 
         //---retorne a referencia de todos os objetos do layout
         TextView txtID = (TextView) rowView.findViewById(R.id.txtID);
@@ -40,19 +40,9 @@ public class ListaAdapter2 extends ArrayAdapter<String> {
 
         //---passe os textos baseados na posição atual do listView
         txtID.setText("ID: " + ids[position]);
-
-        // formata endereço exibindo somente nome do bairro (até a primeira vírgula)
-        String OrigemF1 = titulos[position];
-        int pos = OrigemF1.indexOf(",");
-        String OrigemF2 = "End.: " + OrigemF1.substring(0,pos);
-        txtTitulo.setText(OrigemF2);
-
-        String DestinoF1 = subtitulos[position];
-        int pos1 = DestinoF1.indexOf(",");
-        String DestinoF2 = "Número: " + DestinoF1.substring(0,pos1);
-        txtSubtitulo.setText(DestinoF2);
-
-        txtSubtitulo1.setText("Complemento: " + subtitulos1[position] + "Km");
+        txtTitulo.setText("End.: " + titulos[position]);
+        txtSubtitulo.setText("Número: " + subtitulos[position]);
+        txtSubtitulo1.setText("Complem.: " + subtitulos1[position]);
         return rowView;
     }
 }

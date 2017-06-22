@@ -1,13 +1,12 @@
 package com.logvai.logvai;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ParseJSON2 {
 
-    public static final String JSON_ARRAY = "entregas";
+    public static final String JSON_ARRAY = "entregas2";
 
     public static String[] IDs;
     public static String[] Titulos;
@@ -15,7 +14,7 @@ public class ParseJSON2 {
     public static String[] SubTitulos1;
 
     // defina aqui os campos a serem lidos
-    public static final String KEY_ID = "ID_Entrega_Filho";
+    public static final String KEY_ID = "ID_Entrega";
     public static final String KEY_TITULO = "Endereco";
     public static final String KEY_SUBTITULO = "Numero";
     public static final String KEY_SUBTITULO1 = "Complemento";

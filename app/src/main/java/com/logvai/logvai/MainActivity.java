@@ -395,11 +395,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         btDetalhes.setVisibility(View.VISIBLE);
 
         // Vibrate for 2000 milliseconds
-        vibrator.vibrate(2000);
+        //vibrator.vibrate(2000);
 
         //Beep
-        ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 800);
-        toneGen1.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK,2000);
+        //ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 800);
+        //toneGen1.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK,2000);
 
     }
 
