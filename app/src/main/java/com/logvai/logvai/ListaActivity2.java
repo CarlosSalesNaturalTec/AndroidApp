@@ -56,10 +56,10 @@ public class ListaActivity2 extends ListActivity {
 
                 //transferencia de dados entre Activitys
                 Bundle b = new Bundle();
-                b.putString("IDEntrega",idEntrega);
+                b.putString("IDAuxiliar2",idEntrega);
 
                 //abre nova Activity
-                Intent proximatela = new Intent(getApplicationContext(),MapsActivity.class);
+                Intent proximatela = new Intent(getApplicationContext(),DetalhesActivity2.class);
                 proximatela.putExtras(b);
                 startActivity(proximatela);
 

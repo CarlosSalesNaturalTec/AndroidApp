@@ -40,9 +40,9 @@ public class ListaAdapter2 extends ArrayAdapter<String> {
 
         //---passe os textos baseados na posição atual do listView
         txtID.setText("ID: " + ids[position]);
-        txtTitulo.setText("End.: " + titulos[position]);
+        txtTitulo.setText(titulos[position]);
         txtSubtitulo.setText("Número: " + subtitulos[position]);
-        txtSubtitulo1.setText("Complem.: " + subtitulos1[position]);
+        txtSubtitulo1.setText(subtitulos1[position]);
         return rowView;
     }
 }

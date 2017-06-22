@@ -41,8 +41,8 @@
             android:label="@string/title_activity_maps" />
         <activity android:name=".ConfigActivity" />
         <activity android:name=".ListaActivity" />
-        <activity android:name=".DetalhesActivity" />
-        <activity android:name=".ListaActivity2"></activity>
+        <activity android:name=".ListaActivity2" />
+        <activity android:name=".DetalhesActivity2"></activity>
     </application>
 
 </manifest>

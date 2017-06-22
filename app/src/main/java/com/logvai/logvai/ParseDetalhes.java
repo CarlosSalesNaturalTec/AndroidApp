@@ -20,16 +20,16 @@ public class ParseDetalhes {
     public static String Campo10;
 
     // defina aqui os campos a serem lidos
-    public static final String KEY1 = "Nome_Destinatario";
-    public static final String KEY2 = "Bairro";
-    public static final String KEY3 = "Endereco";
-    public static final String KEY4 = "Ponto_Ref";
-    public static final String KEY5 = "Cidade";
-    public static final String KEY6 = "Telefone";
-    public static final String KEY7 = "Observacoes";
-    public static final String KEY8 = "Latitude";
-    public static final String KEY9 = "Longitude";
-    public static final String KEY10 = "Partida_Data";
+    public static final String KEY1 = "Endereco";
+    public static final String KEY2 = "numero";
+    public static final String KEY3 = "complemento";
+    public static final String KEY4 = "Contactar";
+    public static final String KEY5 = "Detalhes";
+    public static final String KEY6 = "Banco";
+    public static final String KEY7 = "Telefone";
+    public static final String KEY8 = "HoraPartida";
+    public static final String KEY9 = "Latitude";
+    public static final String KEY10 = "Longitude";
 
     private JSONArray users = null;
     private String json;
@@ -40,7 +40,7 @@ public class ParseDetalhes {
 
     protected void parseDetalhes(){
 
-        // Esta classe considera que só existe um registro no arquivo JSON
+        // Esta classe considera que só existe UM registro no arquivo JSON. IDentrega=X
         JSONObject jsonObject=null;
         try {
             jsonObject = new JSONObject(json);

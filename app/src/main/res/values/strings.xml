@@ -10,7 +10,7 @@
     <string name="msgEntregaNova">Novas Entregas a Realizar.</string>
 
     <string-array name="status_array">
-        <item>SELECIONE STATUS DA ENTREGA</item>
+        <item>SELECIONE STATUS</item>
         <item>01 - ENTREGA EFETUADA</item>
         <item>02 - MUDOU-SE</item>
         <item>03 - AUSENTE</item>
