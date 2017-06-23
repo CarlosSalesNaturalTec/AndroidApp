@@ -20,6 +20,7 @@ public class ListaActivity2 extends ListActivity {
     public  ListView lv2;
     ProgressDialog progressDialog;
     public String IdEntrega="";
+    public String IDPai;
 
     //Volley conectividade
     public String JSON_URL="";
@@ -41,6 +42,7 @@ public class ListaActivity2 extends ListActivity {
         Bundle b = getIntent().getExtras();
         IdEntrega = b.getString("IDauxiliar");
 
+
         //requisita lista de entregas e preenche ListView
         JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas2?param1="+ IdEntrega;
         volleyStringRequst(JSON_URL);
@@ -56,7 +58,8 @@ public class ListaActivity2 extends ListActivity {
 
                 //transferencia de dados entre Activitys
                 Bundle b = new Bundle();
-                b.putString("IDAuxiliar2",idEntrega);
+                b.putString("idFilho",idEntrega);
+                b.putString("IDPai",IDPai);
 
                 //abre nova Activity
                 Intent proximatela = new Intent(getApplicationContext(),DetalhesActivity2.class);

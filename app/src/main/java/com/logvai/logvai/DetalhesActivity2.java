@@ -26,7 +26,7 @@ public class DetalhesActivity2 extends Activity {
     Spinner spinner;
 
     public static String JSON_URL = "", MapLat, MapLongt;
-    public String IdEntrega="", StatusEntrega="";
+    public String IdEntrega="", IDPai="", StatusEntrega="";
 
     //======================================================================================================================
     //Ciclo da Activity - on Create
@@ -82,7 +82,8 @@ public class DetalhesActivity2 extends Activity {
 
         //recupera dados passados da Activity anterior - ID da Entrega
         Bundle b = getIntent().getExtras();
-        IdEntrega = b.getString("IDAuxiliar2");
+        IdEntrega = b.getString("idFilho");
+        IDPai = b.getString("IDPai");
 
         //requisita detalhes de entrega
         JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/DetalhesEntrega?param1=" + IdEntrega;
@@ -172,13 +173,12 @@ public class DetalhesActivity2 extends Activity {
         horaFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
 
-        // ATENÇÃO!!!! pegar localização corrente do motoboy. corrigir
-        String lat ="0",lon="0";
-
         // envia requisição para atualizar status da entrega: VIAGEM INICIADA
-        JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/StartTravel?IdEntrega=" +
-                IdEntrega + "&latitude=" + lat + "&longitude=" + lon +
+        JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/StartTravel" +
+                "?IdEntrega=" +  IdEntrega +
+                "&IdPai=" + IDPai +
                 "&dataleitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date);
+
         volleyUpdateTravel(JSON_URL);
 
         txtStartTravel.setText("Inicio da Viagem: " + horaFormat.format(date));
@@ -216,14 +216,15 @@ public class DetalhesActivity2 extends Activity {
         horaFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
 
-        // ATENÇÃO!!!! pegar localização corrente do motoboy. corrigir
-        String lat ="0",lon="0";
         String mStatus = StatusEntrega.substring(0,2);
 
         // envia requisição para atualizar status da entrega: VIAGEM CONCLUIDA
-        JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/EndTravel?IdEntrega=" + IdEntrega +
-                "&latitude=" + lat + "&longitude=" + lon + "&dataLeitura=" + dateFormat.format(date) +
-                "%20" + horaFormat.format(date)+ "&Status=" + mStatus;
+        JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/EndTravel"+
+                "?IdEntrega=" + IdEntrega +
+                "?IdPai=" + IDPai +
+                "&dataLeitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date) +
+                "&Status=" + mStatus;
+
         volleyUpdateTravel(JSON_URL);
 
         txtStartTravel.setText("Final da Viagem: " + horaFormat.format(date));
