@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -44,7 +46,7 @@ public class DetalhesActivity2 extends Activity {
         txtnumero = (TextView) findViewById(R.id.txtnumero);
         txtContactar = (TextView) findViewById(R.id.txtContactar);
         txtDetalhes= (TextView) findViewById(R.id.txtDetalhes);
-        txtTelefone = (TextView) findViewById(R.id.txtTelefone);
+
         txtBanco = (TextView) findViewById(R.id.txtBanco);
         txtStartTravel = (TextView) findViewById(R.id.txtStartTravel);
 
@@ -60,15 +62,21 @@ public class DetalhesActivity2 extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
+                /*
                 if (position==0){
-                    botaoConcluir.setEnabled(false);
+                    botaoConcluir.setVisibility(View.INVISIBLE);
+                    spinner.setVisibility(View.INVISIBLE);
+
                     botaoStartTravel.setEnabled(true);
                     botaoMapa.setEnabled(true);
                 }else{
-                    botaoConcluir.setEnabled(true);
+                    spinner.setVisibility(View.VISIBLE);
+                    botaoConcluir.setVisibility(View.VISIBLE);
+
                     botaoStartTravel.setEnabled(false);
                     botaoMapa.setEnabled(false);
                 }
+                */
 
                 StatusEntrega = parent.getItemAtPosition(position).toString();
 
@@ -117,15 +125,42 @@ public class DetalhesActivity2 extends Activity {
 
                 txtEndereco.setText(ParseDetalhes.Campo1);
                 txtnumero.setText("Número: " + ParseDetalhes.Campo2 + " / " + ParseDetalhes.Campo3);
-                txtContactar.setText("Contactar: " + ParseDetalhes.Campo4);
+                txtContactar.setText("Contactar: " + ParseDetalhes.Campo4 + " / " +  ParseDetalhes.Campo7);
                 txtDetalhes.setText("Obs.: " + ParseDetalhes.Campo5);
-                txtTelefone.setText("Telefone: " + ParseDetalhes.Campo6);
-                txtBanco.setText(ParseDetalhes.Campo7);
+                txtBanco.setText(ParseDetalhes.Campo6);
 
-                if ( ParseDetalhes.Campo8.length() != 0) {
-                    txtStartTravel.setText("Inicio da Viagem: " + ParseDetalhes.Campo8);
-                    botaoStartTravel.setEnabled(false);
+                if (ParseDetalhes.Campo11.equals("0")){
+
+                    // entrega NÃO INICIADA
+                    botaoConcluir.setVisibility(View.INVISIBLE);
+                    spinner.setVisibility(View.INVISIBLE);
+
+                } else {
+
+                    if (ParseDetalhes.Campo11.equals(Global.globalID) ) {
+
+                        // entrega sendo realizado pelo PRÓPRIO Motoboy
+                        txtStartTravel.setText("Inicio da Viagem: " + ParseDetalhes.Campo8);
+                        botaoStartTravel.setVisibility(View.INVISIBLE);
+
+                        spinner.setVisibility(View.VISIBLE);
+                        spinner.setEnabled(true);
+
+                        botaoConcluir.setVisibility(View.VISIBLE);
+                        botaoConcluir.setEnabled(true);
+
+                    } else {
+
+                        // entrega sendo realizado por OUTRO Motoboy
+                        txtStartTravel.setText("Entrega já iniciada por outro Motoboy");
+
+                        botaoMapa.setVisibility(View.INVISIBLE);
+                        botaoStartTravel.setVisibility(View.INVISIBLE);
+                        botaoConcluir.setVisibility(View.INVISIBLE);
+                        spinner.setVisibility(View.INVISIBLE);
+                    }
                 }
+
 
                 MapLat = ParseDetalhes.Campo9;
                 MapLongt = ParseDetalhes.Campo10;
@@ -175,14 +210,39 @@ public class DetalhesActivity2 extends Activity {
 
         // envia requisição para atualizar status da entrega: VIAGEM INICIADA
         JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/StartTravel" +
-                "?IdEntrega=" +  IdEntrega +
-                "&IdPai=" + IDPai +
-                "&dataleitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date);
+                "?IDMotoboy=" + Global.globalID +
+                "&IDEntrega=" +  IdEntrega +
+                "&IDPai=" + IDPai +
+                "&dataLeitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date);
 
         volleyUpdateTravel(JSON_URL);
 
         txtStartTravel.setText("Inicio da Viagem: " + horaFormat.format(date));
         botaoStartTravel.setEnabled(false);
+    }
+
+    public void btEndTravel (View view){
+
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        horaFormat = new SimpleDateFormat("HH:mm:ss");
+        Date date = new Date();
+
+        String mStatus = StatusEntrega.substring(0,2);
+
+        // envia requisição para atualizar status da entrega: VIAGEM CONCLUIDA
+        JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/EndTravel"+
+                "?IDMotoboy=" + Global.globalID +
+                "&IDEntrega=" +  IdEntrega +
+                "&IDPai=" + IDPai +
+                "&dataLeitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date) +
+                "&Status=" + mStatus;
+
+        volleyUpdateTravel(JSON_URL);
+
+        txtStartTravel.setText("Final da Viagem: " + horaFormat.format(date));
+        botaoConcluir.setEnabled(false);
+        spinner.setEnabled(false);
+
     }
 
     public void volleyUpdateTravel(String url){
@@ -209,29 +269,6 @@ public class DetalhesActivity2 extends Activity {
     }
     //======================================================================================================================
 
-
-    public void btEndTravel (View view){
-
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        horaFormat = new SimpleDateFormat("HH:mm:ss");
-        Date date = new Date();
-
-        String mStatus = StatusEntrega.substring(0,2);
-
-        // envia requisição para atualizar status da entrega: VIAGEM CONCLUIDA
-        JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/EndTravel"+
-                "?IdEntrega=" + IdEntrega +
-                "?IdPai=" + IDPai +
-                "&dataLeitura=" + dateFormat.format(date) + "%20" + horaFormat.format(date) +
-                "&Status=" + mStatus;
-
-        volleyUpdateTravel(JSON_URL);
-
-        txtStartTravel.setText("Final da Viagem: " + horaFormat.format(date));
-        botaoConcluir.setEnabled(false);
-        spinner.setEnabled(false);
-
-    }
 
 
 

@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     TextView txtID, txtMSGTitulo, txtMSGTitulo2;
     Switch swctOnOff;
     Button btDetalhes;
+    Button btEmAndamento;
     public String OnOff = "Off";
 
     // Localização
@@ -84,6 +85,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         txtMSGTitulo = (TextView) findViewById(R.id.txtMSGTitulo);
         txtMSGTitulo2 = (TextView) findViewById(R.id.txtMSGTitulo2);
         btDetalhes = (Button) findViewById(R.id.btDetalhes);
+        btEmAndamento = (Button) findViewById(R.id.btEmAndamento);
 
         vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -171,7 +173,9 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     //==============================================================================================
     // Identifica Motoboy
     public void IdentificaID(){
+
         SharedPreferences preferences = getSharedPreferences("LOGVAI_CONFIG", Context.MODE_PRIVATE);
+
         if (preferences.contains(("IDMotoboy"))){
             // Salva ID em variável Global para ser utilizado nas outras Activitys
             Global.globalID = preferences.getString("IDMotoboy","0");
@@ -180,6 +184,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
             // Identifica Nome do Motoboy
             STRING_REQUEST_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/IdentificaID?param1=" + IdMotoboy ;
             volleyStringRequestID(STRING_REQUEST_URL);
+
         }else{
             swctOnOff.setEnabled(false);
             OnOff = "Off";
@@ -276,6 +281,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     // Verifica chamados em aberto - A cada X segundos faz requisição em WebService
                     STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/VerificaEntregas?IdMotoboy=" + Global.globalID ;
                     volleyStringRequst(STRING_REQUEST_URL);
+
+                    // Verifica Entregas em andamento - A cada X segundos faz requisição em WebService
+                    STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/EntregasEmAndamento?IdMotoboy=" + Global.globalID ;
+                    volleyStringEmAndamento(STRING_REQUEST_URL);
+
 
                 }});
         }
@@ -374,6 +384,36 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, REQUEST_TAG);
     }
 
+    public void volleyStringEmAndamento(String url){
+
+        // verifica se existem entregas em andamento
+        String  REQUEST_TAG = "com.logvai.emandamento";
+
+        StringRequest strReq = new StringRequest(url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                int retorno = response.indexOf("9999");
+
+                if (retorno == -1){
+
+                } else {
+                    btEmAndamento.setVisibility(View.VISIBLE);
+                    AvisoApagar();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Toast.makeText(MainActivity.this, "Falha de Comunicação", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // Adding String request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, REQUEST_TAG);
+    }
+
     public void volleyInvalidateCache(String url){
         AppSingleton.getInstance(getApplicationContext()).getRequestQueue().getCache().invalidate(url, true);
     }
@@ -414,6 +454,12 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         Intent it = new Intent(this, ListaActivity.class);
         startActivity(it);
     }
+
+    public void EntregasEmAndamento (View view){
+
+    }
+
+
     // ==============================================================================================================
 
 

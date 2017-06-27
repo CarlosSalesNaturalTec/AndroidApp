@@ -41,7 +41,7 @@ public class ListaActivity2 extends ListActivity {
         //recupera dados passados da Activity anterior - ID da Entrega Master
         Bundle b = getIntent().getExtras();
         IdEntrega = b.getString("IDauxiliar");
-
+        IDPai = IdEntrega;
 
         //requisita lista de entregas e preenche ListView
         JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas2?param1="+ IdEntrega;
