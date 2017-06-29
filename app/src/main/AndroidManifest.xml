@@ -42,7 +42,8 @@
         <activity android:name=".ConfigActivity" />
         <activity android:name=".ListaActivity" />
         <activity android:name=".ListaActivity2" />
-        <activity android:name=".DetalhesActivity2"></activity>
+        <activity android:name=".DetalhesActivity2" />
+        <activity android:name=".ListaActivity3"></activity>
     </application>
 
 </manifest>

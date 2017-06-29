@@ -49,6 +49,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     Button btDetalhes;
     Button btEmAndamento;
     public String OnOff = "Off";
+    public boolean EmAndamento=false;
 
     // Localização
     Location mLastLocation;
@@ -65,7 +66,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     // Volley conectividade
     private static String STRING_REQUEST_URL;
-    private static final String TAG = "MainActivity";
     //==============================================================================================
 
 
@@ -89,16 +89,17 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
         vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
+        //Identifica ID do Motoboy
+        IdentificaID();
+
         //Google API
         buildGoogleApiClient();
 
-        // Identifica ID do Motoboy
-        IdentificaID();
 
         // Ativa TIMER
         timer = new Timer();
         myTimerTask = new MyTimerTask();
-        timer.schedule(myTimerTask, 0, 20000); //atualiza a cada 10 segundos
+        timer.schedule(myTimerTask, 0, 20000); //atualiza a cada X segundos
 
         // verifica estado do Swicht
         swctOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -109,7 +110,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     OnOff = "On";
                     timer = new Timer();
                     myTimerTask = new MyTimerTask();
-                    timer.schedule(myTimerTask, 0, 20000); //atualiza a cada 20 segundos
+                    timer.schedule(myTimerTask, 0, 20000); //atualiza a cada X segundos
 
                 }else{
                     //desativa timer
@@ -146,7 +147,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     @Override
     protected void onResume() {
         super.onResume();
-        OnOff = "On";
+        //OnOff = "On";
     }
 
     // =============================================================================================
@@ -177,18 +178,34 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         SharedPreferences preferences = getSharedPreferences("LOGVAI_CONFIG", Context.MODE_PRIVATE);
 
         if (preferences.contains(("IDMotoboy"))){
+
             // Salva ID em variável Global para ser utilizado nas outras Activitys
             Global.globalID = preferences.getString("IDMotoboy","0");
             IdMotoboy = Global.globalID;
 
-            // Identifica Nome do Motoboy
-            STRING_REQUEST_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/IdentificaID?param1=" + IdMotoboy ;
-            volleyStringRequestID(STRING_REQUEST_URL);
+            //Identifica Nome do Motoboy
+            //STRING_REQUEST_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/IdentificaID?param1=" + IdMotoboy ;
+            //volleyStringRequestID(STRING_REQUEST_URL);
+
+            txtID.setText("ID: " + IdMotoboy);
+            swctOnOff.setEnabled(true);
+            OnOff = "On";
+
+            // verifica horário comercial
+            Calendar calander = Calendar.getInstance();
+            int cHour = calander.get(Calendar.HOUR_OF_DAY);
+            if ( cHour > 19){
+                txtMSGTitulo.setVisibility(View.VISIBLE);
+                txtMSGTitulo.setText("Fora de Horário Comercial!" );
+                swctOnOff.setEnabled(false);
+                OnOff = "Off";
+            }
 
         }else{
             swctOnOff.setEnabled(false);
             OnOff = "Off";
         }
+
     }
     //==============================================================================================
 
@@ -228,7 +245,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         // ==============================================================================================================
         STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/Localizacao?param1=" + IdMotoboy +
                 "&param2=" + lat + "&param3=" + lon;
-        volleyStringRequst(STRING_REQUEST_URL);
+        volleyLocation(STRING_REQUEST_URL);
         // ==============================================================================================================
 
     }
@@ -257,7 +274,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         // ==============================================================================================================
         STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/Localizacao?param1=" + IdMotoboy +
                 "&param2=" + lat + "&param3=" + lon;
-        volleyStringRequst(STRING_REQUEST_URL);
+        volleyLocation(STRING_REQUEST_URL);
         // ==============================================================================================================
 
     }
@@ -278,14 +295,14 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
                     if (OnOff == "Off") { return;}
 
-                    // Verifica chamados em aberto - A cada X segundos faz requisição em WebService
-                    STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/VerificaEntregas?IdMotoboy=" + Global.globalID ;
-                    volleyStringRequst(STRING_REQUEST_URL);
-
                     // Verifica Entregas em andamento - A cada X segundos faz requisição em WebService
                     STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/EntregasEmAndamento?IdMotoboy=" + Global.globalID ;
                     volleyStringEmAndamento(STRING_REQUEST_URL);
 
+                    if (EmAndamento == true) {
+                        AvisoApagar();
+                        return;
+                    }
 
                 }});
         }
@@ -300,6 +317,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     //VOLLEY CONECTIVIDADE - TROCA DE DADOS COM WEB-SERVICE
     public void volleyStringRequst(String url){
 
+        if (OnOff == "Off") { return;}
+
         String  REQUEST_TAG = "com.logvai.logvai";
 
         StringRequest strReq = new StringRequest(url, new Response.Listener<String>() {
@@ -308,19 +327,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
                 int retorno = response.indexOf("9999");
 
-                if (retorno == -1){
-
-                    // verifica se é um retorno do envio de localização
-                    retorno = response.indexOf("OK");
-                    if (retorno != -1){
-                        return;
-                    }
-
-                    AvisoEntrega();
-
-                } else {
-                    AvisoApagar();
-                }
+                if (retorno > 0 ){ AvisoApagar(); } else { AvisoEntrega();}
 
             }
         }, new Response.ErrorListener() {
@@ -330,6 +337,30 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                 //Toast.makeText(MainActivity.this, "Falha de Comunicação", Toast.LENGTH_SHORT).show();
             }
         });
+        // Adding String request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, REQUEST_TAG);
+    }
+
+    public void volleyLocation(String url){
+
+        if (OnOff == "Off") { return;}
+
+        String  REQUEST_TAG = "com.logvai.location";
+
+        StringRequest strReq = new StringRequest(url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+            //não precisa fazer nada, após envio de coordenada
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Toast.makeText(MainActivity.this, "Falha de Comunicação", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // Adding String request to request queue
         AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, REQUEST_TAG);
     }
@@ -345,11 +376,14 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
                 int retorno = response.indexOf("9999");
 
-                if (retorno != -1){
+                if (retorno > 0){
+
                     txtID.setText("Usuário NÃO CADASTRADO" );
                     swctOnOff.setEnabled(false);
                     OnOff = "Off";
+
                 } else {
+
                     // verifica horário comercial
                     Calendar calander = Calendar.getInstance();
                     int cHour = calander.get(Calendar.HOUR_OF_DAY);
@@ -364,12 +398,22 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                         int v1 = pos + 7;
                         int v2 = pos1 - v1;
                         int v3 = v1 + v2;
-                        String nomeUser = response.substring(v1, v3);
+
+                        String nomeUser = "";
+
+                        try {
+                            nomeUser = response.substring(v1, v3);
+
+                        } catch (Exception ex) {
+                            nomeUser = "Tente Logar Novamente: " + ex;
+                        }
+
 
                         txtID.setText("Usuário: " + nomeUser);
                         swctOnOff.setEnabled(true);
                         OnOff = "On";
                     }
+
                 }
 
             }
@@ -386,6 +430,10 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     public void volleyStringEmAndamento(String url){
 
+        if (OnOff == "Off") { return;}
+
+        if (EmAndamento == true) {return; }
+
         // verifica se existem entregas em andamento
         String  REQUEST_TAG = "com.logvai.emandamento";
 
@@ -395,9 +443,16 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
                 int retorno = response.indexOf("9999");
 
-                if (retorno == -1){
+                if (retorno > 0){
+
+                    EmAndamento = false;
+
+                    // Verifica chamados em aberto -
+                    STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/VerificaEntregas?IdMotoboy=" + Global.globalID ;
+                    volleyStringRequst(STRING_REQUEST_URL);
 
                 } else {
+                    EmAndamento = true;
                     btEmAndamento.setVisibility(View.VISIBLE);
                     AvisoApagar();
                 }
@@ -456,7 +511,9 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     }
 
     public void EntregasEmAndamento (View view){
-
+        OnOff = "Off";
+        Intent it = new Intent(this, ListaActivity3.class);
+        startActivity(it);
     }
 
 

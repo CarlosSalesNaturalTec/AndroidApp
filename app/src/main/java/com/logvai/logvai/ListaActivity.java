@@ -76,7 +76,7 @@ public class ListaActivity extends ListActivity {
     //======================================================================================================================
     public void volleyStringRequst(String url){
 
-        String  REQUEST_TAG = "com.logvai.volleyStringRequest";
+        String  REQUEST_TAG = "com.logvai.lista1";
         progressDialog.setMessage("Aguarde...");
         progressDialog.show();
 

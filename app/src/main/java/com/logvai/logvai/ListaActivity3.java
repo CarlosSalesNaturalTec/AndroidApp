@@ -1,5 +1,6 @@
 package com.logvai.logvai;
 
+
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -7,23 +8,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-public class ListaActivity2 extends ListActivity {
+public class ListaActivity3 extends ListActivity {
 
     // ==============================================================================================================
     // DECLARAÇÕES DIVERSAS
-    public  ListView lv2;
+    public  ListView lv;
     ProgressDialog progressDialog;
-    public String IdEntrega="";
-    public String IDPai;
 
     //Volley conectividade
-    public String JSON_URL="";
+    public static final String JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/EmAndamento?param1=" + Global.globalID ;
     // ==============================================================================================================
 
 
@@ -32,37 +30,30 @@ public class ListaActivity2 extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lista2);
+        setContentView(R.layout.activity_lista3);
 
         //monta ListView
-        lv2 = (ListView) findViewById(android.R.id.list);
+        lv = (ListView) findViewById(android.R.id.list);
         progressDialog = new ProgressDialog(this);
 
-        //recupera dados passados da Activity anterior - ID da Entrega Master
-        Bundle b = getIntent().getExtras();
-        IdEntrega = b.getString("IDauxiliar");
-        IDPai = IdEntrega;
-
         //requisita lista de entregas e preenche ListView
-        JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/ListaEntregas2?param1="+ IdEntrega;
         volleyStringRequst(JSON_URL);
 
         //aguarda/verifica seleção do usuário
-        lv2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
-                //ID da Entrega selecionada
-                String  idEntrega    = (String) lv2.getItemAtPosition(position);
+                //ID da Entrega_MASTER selecionada
+                String  idEntrega    = (String) lv.getItemAtPosition(position);
 
                 //transferencia de dados entre Activitys
                 Bundle b = new Bundle();
-                b.putString("idFilho",idEntrega);
-                b.putString("IDPai",IDPai);
+                b.putString("IDauxiliar",idEntrega);
 
                 //abre nova Activity
-                Intent proximatela = new Intent(getApplicationContext(),DetalhesActivity2.class);
+                Intent proximatela = new Intent(getApplicationContext(),ListaActivity2.class);
                 proximatela.putExtras(b);
                 startActivity(proximatela);
 
@@ -85,7 +76,7 @@ public class ListaActivity2 extends ListActivity {
     //======================================================================================================================
     public void volleyStringRequst(String url){
 
-        String  REQUEST_TAG = "com.logvai.Lista2";
+        String  REQUEST_TAG = "com.logvai.lista3";
         progressDialog.setMessage("Aguarde...");
         progressDialog.show();
 
@@ -94,13 +85,12 @@ public class ListaActivity2 extends ListActivity {
             public void onResponse(String response) {
 
                 //Formata retorno obtido do web-service. Layout: [{" json string "}]
-                String str1 =  "{\"entregas2\":" + response.toString().substring(91);
+                String str1 =  "{\"entregas\":" + response.toString().substring(91);
                 int tamanho = str1.length() -9 ;
                 String str2 = str1.substring(0,tamanho) + "}";
 
                 //envia retorno formatado para processo de Parsing
                 showJSON(str2);
-
                 progressDialog.hide();
 
             }
@@ -120,11 +110,11 @@ public class ListaActivity2 extends ListActivity {
     //JSON Parsing
     private void showJSON(String json){
         //monta Array String com lista de Entregas
-        ParseJSON2 pj2 = new ParseJSON2(json);
-        pj2.parseJSON2();
+        ParseJSON pj = new ParseJSON(json);
+        pj.parseJSON();
 
-        ListaAdapter2 l2 = new ListaAdapter2(this, ParseJSON2.IDs, ParseJSON2.Titulos, ParseJSON2.SubTitulos, ParseJSON2.SubTitulos1);
-        lv2.setAdapter(l2);
+        ListaAdapter cl = new ListaAdapter(this, ParseJSON.IDs, ParseJSON.Titulos, ParseJSON.SubTitulos, ParseJSON.SubTitulos1);
+        lv.setAdapter(cl);
     }
     //=====================================================================================================================
 

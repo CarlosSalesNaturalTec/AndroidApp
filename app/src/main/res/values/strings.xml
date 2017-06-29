@@ -11,7 +11,7 @@
 
     <string-array name="status_array">
         <item>SELECIONE STATUS</item>
-        <item>01 - ENTREGA EFETUADA</item>
+        <item>01 - CONCLUIDO COM SUCESSO</item>
         <item>02 - MUDOU-SE</item>
         <item>03 - AUSENTE</item>
         <item>04 - NÃO QUIZ RECEBER</item>

@@ -62,21 +62,11 @@ public class DetalhesActivity2 extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                /*
                 if (position==0){
-                    botaoConcluir.setVisibility(View.INVISIBLE);
-                    spinner.setVisibility(View.INVISIBLE);
-
-                    botaoStartTravel.setEnabled(true);
-                    botaoMapa.setEnabled(true);
+                    botaoConcluir.setEnabled(false);
                 }else{
-                    spinner.setVisibility(View.VISIBLE);
-                    botaoConcluir.setVisibility(View.VISIBLE);
-
-                    botaoStartTravel.setEnabled(false);
-                    botaoMapa.setEnabled(false);
+                    botaoConcluir.setEnabled(true);
                 }
-                */
 
                 StatusEntrega = parent.getItemAtPosition(position).toString();
 
@@ -228,6 +218,8 @@ public class DetalhesActivity2 extends Activity {
         Date date = new Date();
 
         String mStatus = StatusEntrega.substring(0,2);
+
+        // parei aqui - verificar se seleção = 00, caso positivo não prosseguir
 
         // envia requisição para atualizar status da entrega: VIAGEM CONCLUIDA
         JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/EndTravel"+
