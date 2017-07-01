@@ -30,7 +30,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.text.DateFormat;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
@@ -446,6 +445,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                 if (retorno > 0){
 
                     EmAndamento = false;
+                    btEmAndamento.setVisibility(View.INVISIBLE);
 
                     // Verifica chamados em aberto -
                     STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/VerificaEntregas?IdMotoboy=" + Global.globalID ;
@@ -490,11 +490,11 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         btDetalhes.setVisibility(View.VISIBLE);
 
         // Vibrate for 2000 milliseconds
-        //vibrator.vibrate(2000);
+        vibrator.vibrate(2000);
 
         //Beep
-        //ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 800);
-        //toneGen1.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK,2000);
+        ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 800);
+        toneGen1.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK,2000);
 
     }
 
@@ -502,6 +502,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         txtMSGTitulo.setVisibility(View.INVISIBLE);
         txtMSGTitulo2.setVisibility(View.INVISIBLE);
         btDetalhes.setVisibility(View.INVISIBLE);
+        btEmAndamento.setVisibility(View.INVISIBLE);
     }
 
     public void DetalhesEntregas (View view){

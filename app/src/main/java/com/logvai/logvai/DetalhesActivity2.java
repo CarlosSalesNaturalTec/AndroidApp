@@ -3,23 +3,35 @@ package com.logvai.logvai;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DetalhesActivity2 extends Activity {
+public class DetalhesActivity2 extends Activity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     Button botaoConcluir, botaoMapa, botaoStartTravel;
     TextView txtEndereco, txtnumero, txtContactar, txtDetalhes, txtTelefone, txtBanco, txtStartTravel;
@@ -28,7 +40,16 @@ public class DetalhesActivity2 extends Activity {
     Spinner spinner;
 
     public static String JSON_URL = "", MapLat, MapLongt;
-    public String IdEntrega="", IDPai="", StatusEntrega="";
+    public String IdEntrega="", IDPai="", StatusEntrega="", Ordem="";
+
+    // Localização
+    Location mLastLocation;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    String lat, lon;
+
+    // Volley conectividade
+    private static String STRING_REQUEST_URL;
 
     //======================================================================================================================
     //Ciclo da Activity - on Create
@@ -57,6 +78,9 @@ public class DetalhesActivity2 extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        //Google API
+        buildGoogleApiClient();
+
         //aguarda seleção do usuario no Spinner
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -82,12 +106,110 @@ public class DetalhesActivity2 extends Activity {
         Bundle b = getIntent().getExtras();
         IdEntrega = b.getString("idFilho");
         IDPai = b.getString("IDPai");
+        Ordem = b.getString("Ordem");
 
         //requisita detalhes de entrega
         JSON_URL = "http://logvaiws.azurewebsites.net/Webservice.asmx/DetalhesEntrega?param1=" + IdEntrega;
         volleyStringRequst(JSON_URL);
 
     }
+
+
+    // =============================================================================================
+    // Google Play API Services
+    synchronized void buildGoogleApiClient() {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+    }
+    // =============================================================================================
+
+
+
+    //======================================================================================================================
+    //GEOLOCALIZAÇÃO
+    //======================================================================================================================
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+        mLocationRequest.setInterval(30000); // Atualizaçao a cada : 30 segundos
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(DetalhesActivity2.this, "O Aplicativo necessita de permissão de localização. Ative em Configurações", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        if (mLastLocation != null) {
+            lat = String.valueOf(mLastLocation.getLatitude());
+            lon = String.valueOf(mLastLocation.getLongitude());
+        }
+
+        // envia dados de localização utilizando Volley
+        // ==============================================================================================================
+        STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/Localizacao?param1=" + Global.globalID +
+                "&param2=" + lat + "&param3=" + lon;
+        volleyLocation(STRING_REQUEST_URL);
+        // ==============================================================================================================
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        buildGoogleApiClient();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        lat = String.valueOf(location.getLatitude());
+        lon = String.valueOf(location.getLongitude());
+
+        // envia dados de localização utilizando Volley library
+        // ==============================================================================================================
+        STRING_REQUEST_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/Localizacao?param1=" + Global.globalID +
+                "&param2=" + lat + "&param3=" + lon;
+        volleyLocation(STRING_REQUEST_URL);
+        // ==============================================================================================================
+
+    }
+    //======================================================================================================================
 
 
     //======================================================================================================================
@@ -119,38 +241,44 @@ public class DetalhesActivity2 extends Activity {
                 txtDetalhes.setText("Obs.: " + ParseDetalhes.Campo5);
                 txtBanco.setText(ParseDetalhes.Campo6);
 
-                if (ParseDetalhes.Campo11.equals("0")){
-
-                    // entrega NÃO INICIADA
+                if ( !Ordem.equals("0") ){
+                    botaoStartTravel.setVisibility(View.INVISIBLE);
                     botaoConcluir.setVisibility(View.INVISIBLE);
                     spinner.setVisibility(View.INVISIBLE);
-
                 } else {
 
-                    if (ParseDetalhes.Campo11.equals(Global.globalID) ) {
+                    if (ParseDetalhes.Campo11.equals("0")) {
 
-                        // entrega sendo realizado pelo PRÓPRIO Motoboy
-                        txtStartTravel.setText("Inicio da Viagem: " + ParseDetalhes.Campo8);
-                        botaoStartTravel.setVisibility(View.INVISIBLE);
-
-                        spinner.setVisibility(View.VISIBLE);
-                        spinner.setEnabled(true);
-
-                        botaoConcluir.setVisibility(View.VISIBLE);
-                        botaoConcluir.setEnabled(true);
+                        // entrega NÃO INICIADA
+                        botaoConcluir.setVisibility(View.INVISIBLE);
+                        spinner.setVisibility(View.INVISIBLE);
 
                     } else {
 
-                        // entrega sendo realizado por OUTRO Motoboy
-                        txtStartTravel.setText("Entrega já iniciada por outro Motoboy");
+                        if (ParseDetalhes.Campo11.equals(Global.globalID)) {
 
-                        botaoMapa.setVisibility(View.INVISIBLE);
-                        botaoStartTravel.setVisibility(View.INVISIBLE);
-                        botaoConcluir.setVisibility(View.INVISIBLE);
-                        spinner.setVisibility(View.INVISIBLE);
+                            // entrega sendo realizado pelo PRÓPRIO Motoboy
+                            txtStartTravel.setText("Inicio da Viagem: " + ParseDetalhes.Campo8);
+                            botaoStartTravel.setVisibility(View.INVISIBLE);
+
+                            spinner.setVisibility(View.VISIBLE);
+                            spinner.setEnabled(true);
+
+                            botaoConcluir.setVisibility(View.VISIBLE);
+                            botaoConcluir.setEnabled(true);
+
+                        } else {
+
+                            // entrega sendo realizado por OUTRO Motoboy
+                            txtStartTravel.setText("Entrega já iniciada por outro Motoboy");
+
+                            botaoMapa.setVisibility(View.INVISIBLE);
+                            botaoStartTravel.setVisibility(View.INVISIBLE);
+                            botaoConcluir.setVisibility(View.INVISIBLE);
+                            spinner.setVisibility(View.INVISIBLE);
+                        }
                     }
                 }
-
 
                 MapLat = ParseDetalhes.Campo9;
                 MapLongt = ParseDetalhes.Campo10;
@@ -166,6 +294,26 @@ public class DetalhesActivity2 extends Activity {
                 progressDialog.hide();
             }
         });
+        // Adding String request to request queue
+        AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, REQUEST_TAG);
+    }
+
+    public void volleyLocation(String url){
+
+        String  REQUEST_TAG = "com.logvai.location2";
+        StringRequest strReq = new StringRequest(url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //não precisa fazer nada, após envio de coordenada
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Toast.makeText(MainActivity.this, "Falha de Comunicação", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // Adding String request to request queue
         AppSingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq, REQUEST_TAG);
     }
@@ -209,6 +357,13 @@ public class DetalhesActivity2 extends Activity {
 
         txtStartTravel.setText("Inicio da Viagem: " + horaFormat.format(date));
         botaoStartTravel.setEnabled(false);
+
+        spinner.setVisibility(View.VISIBLE);
+        spinner.setEnabled(true);
+
+        botaoConcluir.setVisibility(View.VISIBLE);
+        botaoConcluir.setEnabled(true);
+
     }
 
     public void btEndTravel (View view){
@@ -219,7 +374,10 @@ public class DetalhesActivity2 extends Activity {
 
         String mStatus = StatusEntrega.substring(0,2);
 
-        // parei aqui - verificar se seleção = 00, caso positivo não prosseguir
+        if (StatusEntrega.equals("SELECIONE STATUS")) {
+            Toast.makeText(DetalhesActivity2.this, "Selecione um Status", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // envia requisição para atualizar status da entrega: VIAGEM CONCLUIDA
         JSON_URL="http://logvaiws.azurewebsites.net/Webservice.asmx/EndTravel"+

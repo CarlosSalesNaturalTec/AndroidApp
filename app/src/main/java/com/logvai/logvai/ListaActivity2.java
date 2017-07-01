@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -60,6 +59,7 @@ public class ListaActivity2 extends ListActivity {
                 Bundle b = new Bundle();
                 b.putString("idFilho",idEntrega);
                 b.putString("IDPai",IDPai);
+                b.putString("Ordem", String.valueOf(position));
 
                 //abre nova Activity
                 Intent proximatela = new Intent(getApplicationContext(),DetalhesActivity2.class);

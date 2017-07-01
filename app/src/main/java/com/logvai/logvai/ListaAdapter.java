@@ -44,12 +44,22 @@ public class ListaAdapter extends ArrayAdapter<String>{
         // formata endereço exibindo somente nome do bairro (até a primeira vírgula)
         String OrigemF1 = titulos[position];
         int pos = OrigemF1.indexOf(",");
-        String OrigemF2 = "Origem: " + OrigemF1.substring(0,pos);
+        String OrigemF2="";
+        try {
+            OrigemF2 = "Origem: " + OrigemF1.substring(0, pos);
+        } catch (Exception ex) {
+            OrigemF2 = "Origem: ";
+        }
         txtTitulo.setText(OrigemF2);
 
         String DestinoF1 = subtitulos[position];
+        String DestinoF2 ="";
         int pos1 = DestinoF1.indexOf(",");
-        String DestinoF2 = "Destino: " + DestinoF1.substring(0,pos1);
+        try {
+            DestinoF2 = "Destino: " + DestinoF1.substring(0, pos1);
+        } catch (Exception ex) {
+            DestinoF2 = "Destino:";
+        }
         txtSubtitulo.setText(DestinoF2);
 
         txtSubtitulo1.setText("Distância: " + subtitulos1[position] + "Km");
