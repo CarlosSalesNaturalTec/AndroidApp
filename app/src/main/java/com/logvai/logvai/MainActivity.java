@@ -502,7 +502,6 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         txtMSGTitulo.setVisibility(View.INVISIBLE);
         txtMSGTitulo2.setVisibility(View.INVISIBLE);
         btDetalhes.setVisibility(View.INVISIBLE);
-        btEmAndamento.setVisibility(View.INVISIBLE);
     }
 
     public void DetalhesEntregas (View view){
@@ -540,13 +539,23 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     @Override
     public boolean onMenuItemSelected(int panel, MenuItem item){
         switch (item.getItemId()){
+
             case 0 :
                 Intent it = new Intent(this, ConfigActivity.class);
                 startActivity(it);
                 break;
+
             case 1 :
-                Intent it1 = new Intent(this, MapsActivity.class);
-                startActivity(it1);
+
+                //transferencia de dados entre Activitys - coordenadas do local da entrega
+                Bundle b = new Bundle();
+                b.putString("MapLatitude","-13.0103068");
+                b.putString("MapLongitude","-38.5328883");
+
+                //inicia nova Activity
+                Intent proximatela = new Intent(getApplicationContext(),MapsActivity.class);
+                proximatela.putExtras(b);
+                startActivity(proximatela);
                 break;
         }
         return true;

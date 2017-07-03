@@ -19,6 +19,7 @@ public class ParseDetalhes {
     public static String Campo9;
     public static String Campo10;
     public static String Campo11;
+    public static String Campo12;
 
     // defina aqui os campos a serem lidos
     public static final String KEY1 = "Endereco";
@@ -32,6 +33,7 @@ public class ParseDetalhes {
     public static final String KEY9 = "Latitude";
     public static final String KEY10 = "Longitude";
     public static final String KEY11 = "IDMotoboy";
+    public static final String KEY12 = "FormaPag";
 
     private JSONArray users = null;
     private String json;
@@ -61,6 +63,7 @@ public class ParseDetalhes {
                 Campo9 = jo.getString(KEY9);
                 Campo10 = jo.getString(KEY10);
                 Campo11 = jo.getString(KEY11);
+                Campo12 = jo.getString(KEY12);
             }
 
         } catch (JSONException e) {

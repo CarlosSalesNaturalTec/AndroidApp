@@ -34,7 +34,7 @@ public class DetalhesActivity2 extends Activity implements GoogleApiClient.Conne
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     Button botaoConcluir, botaoMapa, botaoStartTravel;
-    TextView txtEndereco, txtnumero, txtContactar, txtDetalhes, txtTelefone, txtBanco, txtStartTravel;
+    TextView txtEndereco, txtnumero, txtContactar, txtDetalhes, txtTelefone, txtBanco, txtStartTravel, txtDinheiro;
     ProgressDialog progressDialog;
     DateFormat dateFormat, horaFormat;
     Spinner spinner;
@@ -69,6 +69,7 @@ public class DetalhesActivity2 extends Activity implements GoogleApiClient.Conne
         txtDetalhes= (TextView) findViewById(R.id.txtDetalhes);
 
         txtBanco = (TextView) findViewById(R.id.txtBanco);
+        txtDinheiro = (TextView) findViewById(R.id.txtDinheiro);
         txtStartTravel = (TextView) findViewById(R.id.txtStartTravel);
 
         //monta Spinner (combo com lista de opções)
@@ -240,6 +241,7 @@ public class DetalhesActivity2 extends Activity implements GoogleApiClient.Conne
                 txtContactar.setText("Contactar: " + ParseDetalhes.Campo4 + " / " +  ParseDetalhes.Campo7);
                 txtDetalhes.setText("Obs.: " + ParseDetalhes.Campo5);
                 txtBanco.setText(ParseDetalhes.Campo6);
+                txtDinheiro.setText(ParseDetalhes.Campo12);
 
                 if ( !Ordem.equals("0") ){
                     botaoStartTravel.setVisibility(View.INVISIBLE);
